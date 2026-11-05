@@ -1,0 +1,123 @@
+@model BookStore.ViewModels.HomeViewModel
+
+<div class="text-center mb-4">
+    <h1 class="display-5 fw-bold">Welcome to Book Store</h1>
+    <p class="text-secondary">Manage your books and authors in one place.</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body p-4">
+                <h3 class="h4 mb-3">Add New Book</h3>
+                <form method="post" action="/Home/AddBook">
+                    <div class="mb-3">
+                        <label class="form-label">Book Title</label>
+                        <input type="text" name="title" class="form-control" placeholder="Enter book title" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Price (Rs.)</label>
+                        <input type="number" name="price" class="form-control" placeholder="Enter price" min="0" step="0.01" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Select Author</label>
+                        <select name="authorId" class="form-select" required>
+                            @foreach (var author in Model.Authors)
+                            {
+                                <option value="@author.Id">@author.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Book</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body p-4">
+                <h3 class="h4 mb-3">Add New Author</h3>
+                <form method="post" action="/Home/AddAuthor">
+                    <div class="mb-3">
+                        <label class="form-label">Author Name</label>
+                        <input type="text" name="name" class="form-control" placeholder="Enter author name" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Country</label>
+                        <input type="text" name="country" class="form-control" placeholder="Enter country" required />
+                    </div>
+                    <button type="submit" class="btn btn-success">Add Author</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-5">
+    <h2 class="h3 mb-3">Available Authors</h2>
+    <div class="d-flex flex-wrap gap-2">
+        @foreach (var author in Model.Authors)
+        {
+            <span class="badge rounded-pill text-bg-secondary p-2">@author.Name - @author.Country</span>
+        }
+    </div>
+</div>
+
+<div class="mt-5">
+    <h2 class="h3 mb-3">Available Books</h2>
+
+    @if (Model.Books.Count == 0)
+    {
+        <p class="alert alert-info">No books available</p>
+    }
+    else
+    {
+        <div class="book-container">
+            @foreach (var book in Model.Books)
+            {
+                <div class="book-card shadow-sm">
+                    <h4>@book.Title</h4>
+                    <p class="mb-2"><strong>Author:</strong> @book.AuthorName</p>
+                    <p class="mb-3"><strong>Price:</strong> Rs. @book.Price</p>
+
+                    <form method="post" action="/Home/RemoveBook" onsubmit="return confirmRemoveBook()">
+                        <input type="hidden" name="id" value="@book.Id" />
+                        <button type="submit" class="btn btn-outline-danger btn-sm">Remove</button>
+                    </form>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section Styles {
+    <style>
+        .book-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .book-card {
+            border: 1px solid #dee2e6;
+            padding: 20px;
+            margin: 5px;
+            width: 260px;
+            border-radius: 10px;
+            background-color: white;
+        }
+
+        .book-card h4 {
+            color: #212529;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        function confirmRemoveBook() {
+            return confirm("Remove this book?");
+        }
+    </script>
+}
